@@ -1,0 +1,366 @@
+:root {
+  --ink: #1c1814;
+  --ink-soft: #3a342c;
+  --paper: #efe6d6;
+  --paper-deep: #e2d4bc;
+  --wash: #d7c4a3;
+  --accent: #6b3f2a;
+  --accent-soft: #8a5a3c;
+  --line: rgba(28, 24, 20, 0.14);
+  --danger: #8b2e2e;
+  --shadow: 0 18px 50px rgba(40, 28, 16, 0.12);
+  --font-display: "ZCOOL XiaoWei", "Noto Serif SC", "Source Han Serif SC",
+    "Songti SC", "STSong", "SimSun", serif;
+  --font-body: "Noto Serif SC", "Source Han Serif SC", "Songti SC", "STSong",
+    "SimSun", "Microsoft YaHei", serif;
+}
+
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+html {
+  min-height: 100%;
+  -webkit-text-size-adjust: 100%;
+  text-rendering: optimizeLegibility;
+}
+
+html,
+body {
+  min-height: 100%;
+}
+
+body {
+  color: var(--ink);
+  background:
+    radial-gradient(ellipse 80% 50% at 20% 0%, rgba(255, 255, 255, 0.35), transparent 55%),
+    radial-gradient(ellipse 70% 45% at 90% 10%, rgba(107, 63, 42, 0.08), transparent 50%),
+    linear-gradient(165deg, #f4ebda 0%, var(--paper) 40%, #e8dcc6 100%);
+  font-family: var(--font-body);
+  font-synthesis: none;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+button,
+input {
+  font: inherit;
+  color: inherit;
+}
+
+.shell {
+  width: min(1100px, calc(100% - 2rem));
+  margin: 0 auto;
+  padding: 2rem 0 3rem;
+}
+
+.home-shell {
+  display: grid;
+  gap: 2.5rem;
+}
+
+.hero {
+  padding: 3.5rem 0 1rem;
+  max-width: 36rem;
+}
+
+.eyebrow {
+  letter-spacing: 0.35em;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  color: var(--accent-soft);
+  margin-bottom: 1rem;
+}
+
+.hero h1 {
+  font-family: var(--font-display);
+  font-size: clamp(2.8rem, 8vw, 4.5rem);
+  font-weight: 400;
+  line-height: 1.1;
+  margin-bottom: 1rem;
+}
+
+.lede {
+  font-size: 1.05rem;
+  line-height: 1.7;
+  color: var(--ink-soft);
+  margin-bottom: 1.75rem;
+}
+
+.hero-actions {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.primary-btn,
+.choice-btn,
+.ghost-btn,
+.save-card {
+  cursor: pointer;
+  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.35);
+  transition: background 0.2s ease, transform 0.15s ease, border-color 0.2s ease;
+}
+
+.primary-btn:hover:not(:disabled),
+.choice-btn:hover:not(:disabled),
+.save-card:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.65);
+  border-color: rgba(107, 63, 42, 0.35);
+}
+
+.primary-btn:disabled,
+.choice-btn:disabled,
+.save-card:disabled,
+.ghost-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.primary-btn {
+  padding: 0.85rem 1.4rem;
+  background: var(--accent);
+  color: #f7efe4;
+  border-color: transparent;
+  letter-spacing: 0.08em;
+}
+
+.primary-btn:hover:not(:disabled) {
+  background: var(--accent-soft);
+  color: #fff;
+}
+
+.ghost-btn {
+  padding: 0.4rem 0.75rem;
+  background: transparent;
+}
+
+.save-list h2 {
+  font-family: var(--font-display);
+  font-size: 1.4rem;
+  font-weight: 400;
+  margin-bottom: 1rem;
+}
+
+.save-list ul {
+  list-style: none;
+  display: grid;
+  gap: 0.75rem;
+}
+
+.save-card {
+  width: 100%;
+  text-align: left;
+  padding: 1rem 1.1rem;
+  display: grid;
+  gap: 0.25rem;
+  box-shadow: var(--shadow);
+}
+
+.save-id {
+  font-size: 0.75rem;
+  letter-spacing: 0.12em;
+  color: var(--accent-soft);
+}
+
+.save-name {
+  font-size: 1.05rem;
+}
+
+.save-meta {
+  font-size: 0.9rem;
+  color: var(--ink-soft);
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.brand-mini {
+  font-family: var(--font-display);
+  letter-spacing: 0.12em;
+}
+
+.topbar-status {
+  font-size: 0.85rem;
+  color: var(--accent);
+}
+
+.play-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 260px;
+  gap: 1.5rem;
+  align-items: start;
+}
+
+.play-main {
+  background: rgba(255, 252, 245, 0.55);
+  border: 1px solid var(--line);
+  padding: 1.5rem;
+  min-height: 28rem;
+  box-shadow: var(--shadow);
+}
+
+.narrative-body {
+  font-size: 1.12rem;
+  line-height: 1.9;
+  white-space: pre-wrap;
+  margin-bottom: 1.25rem;
+}
+
+.narrative-epilogue {
+  border-top: 1px solid var(--line);
+  padding-top: 1rem;
+  color: var(--accent);
+  line-height: 1.7;
+  margin-bottom: 1rem;
+}
+
+.action-block {
+  display: grid;
+  gap: 0.85rem;
+  margin-top: 0.5rem;
+}
+
+.action-prompt,
+.action-hint {
+  color: var(--ink-soft);
+  line-height: 1.6;
+}
+
+.choice-list {
+  display: grid;
+  gap: 0.6rem;
+}
+
+.choice-btn {
+  text-align: left;
+  padding: 0.85rem 1rem;
+  line-height: 1.5;
+}
+
+.multi-item {
+  display: flex;
+  gap: 0.65rem;
+  align-items: flex-start;
+  padding: 0.75rem 0.9rem;
+  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.3);
+  cursor: pointer;
+}
+
+.multi-item.on {
+  border-color: rgba(107, 63, 42, 0.45);
+  background: rgba(255, 255, 255, 0.7);
+}
+
+.multi-item input {
+  margin-top: 0.25rem;
+}
+
+.field-list {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.field-item {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.field-item input {
+  padding: 0.7rem 0.8rem;
+  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.55);
+  outline: none;
+}
+
+.field-item input:focus {
+  border-color: rgba(107, 63, 42, 0.5);
+}
+
+.state-panel {
+  border: 1px solid var(--line);
+  background: rgba(255, 252, 245, 0.4);
+  padding: 1.1rem;
+}
+
+.state-panel h2,
+.state-panel h3 {
+  font-family: var(--font-display);
+  font-weight: 400;
+  margin-bottom: 0.75rem;
+}
+
+.state-panel h3 {
+  font-size: 1rem;
+  margin-top: 1rem;
+}
+
+.state-panel dl {
+  display: grid;
+  gap: 0.55rem;
+}
+
+.state-panel dl > div {
+  display: grid;
+  grid-template-columns: 3rem 1fr;
+  gap: 0.5rem;
+  font-size: 0.92rem;
+  line-height: 1.45;
+}
+
+.state-panel dt {
+  color: var(--accent-soft);
+}
+
+.mind-block ul {
+  list-style: none;
+  display: grid;
+  gap: 0.35rem;
+}
+
+.mind-block li {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+  font-size: 0.92rem;
+}
+
+.summary-block p {
+  font-size: 0.88rem;
+  line-height: 1.6;
+  color: var(--ink-soft);
+}
+
+.loading-text,
+.muted {
+  color: var(--ink-soft);
+  margin-top: 0.75rem;
+}
+
+.error-text {
+  color: var(--danger);
+  margin-top: 1rem;
+  line-height: 1.5;
+}
+
+@media (max-width: 860px) {
+  .play-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .shell {
+    width: min(100% - 1.25rem, 1100px);
+  }
+
+  .hero {
+    padding-top: 2rem;
+  }
+}
