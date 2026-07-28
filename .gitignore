@@ -23,6 +23,10 @@
 # misc
 .DS_Store
 *.pem
+Thumbs.db
+
+# cursor / local IDE
+.cursor/
 
 # debug
 npm-debug.log*
