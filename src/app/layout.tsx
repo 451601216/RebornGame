@@ -15,17 +15,6 @@ export default function RootLayout({
     <html lang="zh-CN">
       <head>
         <meta charSet="utf-8" />
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link
-          rel="preconnect"
-          href="https://fonts.gstatic.com"
-          crossOrigin="anonymous"
-        />
-        {/* Google Fonts CJK：勿用 next/font 的 latin-only 子集，否则汉字缺字/乱显 */}
-        <link
-          href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600&family=ZCOOL+XiaoWei&display=swap"
-          rel="stylesheet"
-        />
       </head>
       <body>{children}</body>
     </html>

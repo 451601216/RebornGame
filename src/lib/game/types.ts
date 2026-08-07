@@ -1,3 +1,5 @@
+import type { MindState } from "./mind";
+
 export type UiType = "single" | "multi" | "fill" | "fill_choice" | "none";
 
 export type UiOption = {
@@ -46,7 +48,8 @@ export type LifeState = {
   age: number;
   location: string;
   health: number;
-  mind: Record<string, number>;
+  /** 固定六维心性，见 mind.ts */
+  mind: MindState;
   flags: Record<string, boolean | string | number>;
   inventory: string[];
   relationships: Relationship[];

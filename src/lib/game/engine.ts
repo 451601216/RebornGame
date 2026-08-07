@@ -2,7 +2,7 @@ import { callLlmJson } from "@/lib/llm/client";
 import {
   buildSummaryUserPrompt,
   buildTurnUserPrompt,
-  SUMMARY_EVENT_THRESHOLD,
+  shouldUpdateMemoryCard,
 } from "./contextBuilder";
 import {
   listPastProfiles,
@@ -33,7 +33,16 @@ function buildFingerprintPromptExtra(
   past: ProfileFingerprint[],
   reason: string,
 ): string {
-  return `\n\n【驳回重试】${reason}\n既有指纹：${JSON.stringify(past)}`;
+  return `\n\n【驳回重试】${reason}\n既有指纹：${JSON.stringify(
+    past.map((p) => ({
+      id: p.id,
+      era: p.era,
+      background: p.background.slice(0, 40),
+      traits: p.traits,
+      themeHook: p.themeHook,
+      nameStyle: p.name,
+    })),
+  )}`;
 }
 
 export async function createNewLife(): Promise<LifeRecord> {
@@ -98,14 +107,22 @@ export async function createNewLife(): Promise<LifeRecord> {
   return life;
 }
 
-async function maybeCompressSummary(life: LifeRecord): Promise<LifeRecord> {
-  if (life.events.length < SUMMARY_EVENT_THRESHOLD) return life;
-  // Compress every threshold turns after threshold
-  if (life.events.length % SUMMARY_EVENT_THRESHOLD !== 0) return life;
+/**
+ * 用「旧记忆卡 + 刚结束的一拍」轻量更新；不再回放全部早期事件。
+ */
+async function maybeUpdateMemoryCard(life: LifeRecord): Promise<LifeRecord> {
+  if (!shouldUpdateMemoryCard(life.events.length)) return life;
+
+  // 倒数第二条：刚被玩家回应并关闭的一拍；最新一条是本轮新事件
+  const closedBeat =
+    life.events.length >= 2
+      ? life.events[life.events.length - 2]
+      : life.events[life.events.length - 1];
+  if (!closedBeat) return life;
 
   const result = await callLlmJson({
     system: buildSummarySystemPrompt(),
-    user: buildSummaryUserPrompt(life),
+    user: buildSummaryUserPrompt(life, closedBeat),
     schema: summaryLlmSchema,
     maxRetries: 1,
   });
@@ -151,10 +168,6 @@ export async function advanceTurn(
     turnResult.ageAdvance,
   );
 
-  if (turnResult.summaryUpdate) {
-    working.summary = turnResult.summaryUpdate;
-  }
-
   const died = Boolean(turnResult.death?.died);
   if (died) {
     working.meta.status = "dead";
@@ -181,10 +194,9 @@ export async function advanceTurn(
     death: turnResult.death,
   };
 
-  // If death, still store epilogue narrative; mark last input complete
   working.events.push(newEvent);
 
-  const maybeSummarized = await maybeCompressSummary(working);
+  const maybeSummarized = await maybeUpdateMemoryCard(working);
   await writeLife(maybeSummarized);
   return maybeSummarized;
 }

@@ -1,5 +1,6 @@
 import { promises as fs } from "fs";
 import path from "path";
+import { normalizeMind } from "./mind";
 import type { LifeListItem, LifeRecord, ProfileFingerprint } from "./types";
 
 const SAVES_DIR = path.join(process.cwd(), "saves");
@@ -13,6 +14,16 @@ function lifePath(id: string): string {
     throw new Error(`非法存档 id: ${id}`);
   }
   return path.join(SAVES_DIR, `${id}.json`);
+}
+
+function normalizeLifeRecord(life: LifeRecord): LifeRecord {
+  return {
+    ...life,
+    state: {
+      ...life.state,
+      mind: normalizeMind(life.state?.mind),
+    },
+  };
 }
 
 export async function listLifeIds(): Promise<string[]> {
@@ -36,16 +47,17 @@ export async function nextLifeId(): Promise<string> {
 
 export async function writeLife(life: LifeRecord): Promise<void> {
   await ensureSavesDir();
-  const target = lifePath(life.id);
+  const normalized = normalizeLifeRecord(life);
+  const target = lifePath(normalized.id);
   const tmp = `${target}.tmp`;
-  const payload = `${JSON.stringify(life, null, 2)}\n`;
+  const payload = `${JSON.stringify(normalized, null, 2)}\n`;
   await fs.writeFile(tmp, payload, { encoding: "utf8" });
   await fs.rename(tmp, target);
 }
 
 export async function readLife(id: string): Promise<LifeRecord> {
   const raw = await fs.readFile(lifePath(id), { encoding: "utf8" });
-  return JSON.parse(raw) as LifeRecord;
+  return normalizeLifeRecord(JSON.parse(raw) as LifeRecord);
 }
 
 export async function listLives(): Promise<LifeListItem[]> {

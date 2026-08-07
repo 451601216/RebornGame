@@ -1,53 +1,120 @@
-import type { LifeEvent, LifeRecord, PlayerInput } from "./types";
+import type { LifeEvent, LifeRecord, LifeState, PlayerInput } from "./types";
 
-const RECENT_EVENTS = 5;
+/** 事件数达到后开始更新记忆卡；之后每 N 次事件轻量更新一次 */
+export const SUMMARY_START_AT = 2;
+export const SUMMARY_UPDATE_EVERY = 2;
 
-function compactEvent(ev: LifeEvent) {
+/** @deprecated 使用 SUMMARY_START_AT / SUMMARY_UPDATE_EVERY */
+export const SUMMARY_EVENT_THRESHOLD = SUMMARY_START_AT;
+
+function truncate(text: string, max: number): string {
+  const t = text.trim();
+  if (t.length <= max) return t;
+  return `${t.slice(0, max)}…`;
+}
+
+function compactPlayerInput(input: PlayerInput | null | undefined) {
+  if (!input) return null;
+  switch (input.type) {
+    case "single":
+      return { type: "single", label: input.label };
+    case "multi":
+      return { type: "multi", labels: input.labels };
+    case "fill":
+      return { type: "fill", values: input.values };
+    case "fill_choice":
+      return {
+        type: "fill_choice",
+        label: input.label,
+        values: input.values,
+      };
+    case "none":
+      return { type: "none" };
+  }
+}
+
+/** 上一拍短卡：叙事截断，不含多轮历史 */
+export function compactBeat(
+  ev: LifeEvent,
+  playerInput?: PlayerInput | null,
+) {
   return {
     turn: ev.turn,
     age: ev.age,
-    narrative: ev.narrative,
+    beat: truncate(ev.narrative, 80),
     uiType: ev.ui.type,
-    playerInput: ev.playerInput ?? null,
-    death: ev.death ?? null,
+    playerInput: compactPlayerInput(playerInput ?? ev.playerInput),
+    death: ev.death
+      ? { died: ev.death.died, cause: ev.death.cause }
+      : null,
   };
 }
 
-export function buildTurnUserPrompt(life: LifeRecord, playerInput: PlayerInput): string {
-  const recent = life.events.slice(-RECENT_EVENTS).map(compactEvent);
-  const lastUiType = life.events[life.events.length - 1]?.ui.type;
-
-  const avoidTags = life.events
-    .slice(-8)
-    .map((e) => e.narrative.slice(0, 24))
-    .filter(Boolean);
-
-  return `当世档案（仅此一世）：
-profile: ${JSON.stringify(life.profile)}
-state: ${JSON.stringify(life.state)}
-summary: ${life.summary || "（暂无）"}
-近期事件: ${JSON.stringify(recent)}
-上一轮 ui.type: ${lastUiType ?? "无"}（若情节允许，本轮尽量换一种交互类型）
-避免重复的情节片段标签: ${JSON.stringify(avoidTags)}
-
-玩家本轮输入: ${JSON.stringify(playerInput)}
-
-请生成下一轮事件 JSON。`;
+function profileFingerprint(life: LifeRecord) {
+  return {
+    name: life.profile.name,
+    era: life.profile.era,
+    birth: life.profile.birth,
+    traits: life.profile.traits,
+    themeHook: life.profile.themeHook,
+  };
 }
 
-export function buildSummaryUserPrompt(life: LifeRecord): string {
-  const older = life.events.slice(0, Math.max(0, life.events.length - RECENT_EVENTS));
-  const compact = older.map((e) => ({
-    turn: e.turn,
-    age: e.age,
-    narrative: e.narrative.slice(0, 120),
-    input: e.playerInput ?? null,
-  }));
-
-  return `profile: ${JSON.stringify(life.profile)}
-当前 state: ${JSON.stringify(life.state)}
-旧 summary: ${life.summary || "（无）"}
-较早事件（需压缩）: ${JSON.stringify(compact)}`;
+function compactState(state: LifeState) {
+  const out: Record<string, unknown> = {
+    age: state.age,
+    location: state.location,
+    health: state.health,
+    mind: state.mind,
+    relationships: state.relationships,
+  };
+  if (state.inventory.length > 0) out.inventory = state.inventory;
+  if (Object.keys(state.flags).length > 0) out.flags = state.flags;
+  return out;
 }
 
-export const SUMMARY_EVENT_THRESHOLD = 8;
+/**
+ * 推进上下文：身份指纹 + state + 记忆卡 + 上一拍（含本轮输入）。
+ * 不再注入多轮事件全文。
+ */
+export function buildTurnUserPrompt(
+  life: LifeRecord,
+  playerInput: PlayerInput,
+): string {
+  const last = life.events[life.events.length - 1];
+  const lastBeat = last ? compactBeat(last, playerInput) : null;
+
+  return `当世上下文（仅此一世；长期记忆以记忆卡为准，勿编造卡外细节）：
+身份指纹: ${JSON.stringify(profileFingerprint(life))}
+state: ${JSON.stringify(compactState(life.state))}
+记忆卡:
+${life.summary?.trim() || "（暂无，请依据身份指纹与上一拍续写）"}
+
+上一拍: ${JSON.stringify(lastBeat)}
+上一拍 ui.type: ${lastBeat?.uiType ?? "无"}（本轮尽量换一种交互类型）
+
+请根据上一拍与玩家输入生成下一事件 JSON。`;
+}
+
+/**
+ * 摘要更新：旧记忆卡 + 刚结束的一拍 + 当前 state，禁止喂全部早期事件。
+ */
+export function buildSummaryUserPrompt(
+  life: LifeRecord,
+  closedBeat: LifeEvent,
+): string {
+  return `身份指纹: ${JSON.stringify(profileFingerprint(life))}
+当前 state: ${JSON.stringify(compactState(life.state))}
+旧记忆卡:
+${life.summary?.trim() || "（无）"}
+
+刚结束的一拍（据此合并更新记忆卡，勿扩写未提及事实）:
+${JSON.stringify(compactBeat(closedBeat))}
+
+请输出更新后的记忆卡 JSON。`;
+}
+
+export function shouldUpdateMemoryCard(eventCount: number): boolean {
+  if (eventCount < SUMMARY_START_AT) return false;
+  return eventCount % SUMMARY_UPDATE_EVERY === 0;
+}

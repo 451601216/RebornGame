@@ -1,4 +1,6 @@
 import { z } from "zod";
+import { coerceSummaryToText, memoryCardSchema } from "./memoryCard";
+import { MIND_KEYS, normalizeMind } from "./mind";
 
 const uiOptionSchema = z.object({
   id: z.string().min(1),
@@ -141,7 +143,20 @@ export const lifeProfileSchema = z.object({
   themeHook: z.string().min(1),
 });
 
-const mindValueSchema = z.record(z.string(), numberish);
+const mindValueSchema = z
+  .record(z.string(), numberish)
+  .transform((raw) => normalizeMind(raw))
+  .superRefine((mind, ctx) => {
+    for (const key of MIND_KEYS) {
+      if (typeof mind[key] !== "number" || Number.isNaN(mind[key])) {
+        ctx.addIssue({
+          code: "custom",
+          message: `mind 缺少有效数值：${key}`,
+          path: [key],
+        });
+      }
+    }
+  });
 
 export const lifeStateSchema = z.object({
   age: numberish,
@@ -166,11 +181,12 @@ export const newLifeLlmSchema = z.object({
     ui: eventUiSchema,
     stateDelta: z.record(z.string(), z.unknown()).default({}),
   }),
-  summary: z.string().min(1),
+  /** 开局记忆卡：对象或旧式字符串，统一存成格式化文本 */
+  summary: z.union([memoryCardSchema, z.string().min(1)]).transform(coerceSummaryToText),
 });
 
 export const summaryLlmSchema = z.object({
-  summary: z.string().min(1),
+  summary: memoryCardSchema.transform(coerceSummaryToText),
 });
 
 export type TurnLlmResult = z.infer<typeof turnLlmSchema>;

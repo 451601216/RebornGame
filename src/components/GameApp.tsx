@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { EventActionPanel } from "@/components/EventActionPanel";
+import { FateLoading } from "@/components/FateLoading";
 import { NarrativeView } from "@/components/NarrativeView";
 import { StatePanel } from "@/components/StatePanel";
 import type { LifeListItem, LifeRecord, PlayerInput } from "@/lib/game/types";
@@ -122,7 +123,7 @@ export function GameApp() {
               ui={currentEvent.ui}
             />
             {loading ? (
-              <p className="loading-text">命运编织中…</p>
+              <FateLoading label="命运编织中" />
             ) : (
               <EventActionPanel
                 ui={currentEvent.ui}
@@ -149,14 +150,18 @@ export function GameApp() {
           每一世从出生到死亡，皆由命运之书写就。选择、填空、承受——在轮回中炼心。
         </p>
         <div className="hero-actions">
-          <button
-            type="button"
-            className="primary-btn"
-            disabled={loading || bootLoading}
-            onClick={startNewLife}
-          >
-            {loading ? "命运编织中…" : "开启新一世"}
-          </button>
+          {loading ? (
+            <FateLoading label="命运编织中" compact />
+          ) : (
+            <button
+              type="button"
+              className="primary-btn"
+              disabled={bootLoading}
+              onClick={startNewLife}
+            >
+              开启新一世
+            </button>
+          )}
         </div>
         {error ? <p className="error-text">{error}</p> : null}
       </header>

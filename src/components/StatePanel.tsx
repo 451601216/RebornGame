@@ -1,5 +1,6 @@
 "use client";
 
+import { MIND_DIMENSIONS } from "@/lib/game/mind";
 import type { LifeRecord } from "@/lib/game/types";
 
 type Props = {
@@ -7,7 +8,7 @@ type Props = {
 };
 
 export function StatePanel({ life }: Props) {
-  const mindEntries = Object.entries(life.state.mind ?? {});
+  const mind = life.state.mind ?? {};
   return (
     <aside className="state-panel">
       <h2>当世</h2>
@@ -37,22 +38,39 @@ export function StatePanel({ life }: Props) {
           <dd>{life.profile.themeHook}</dd>
         </div>
       </dl>
-      {mindEntries.length > 0 ? (
-        <div className="mind-block">
-          <h3>心性</h3>
-          <ul>
-            {mindEntries.map(([k, v]) => (
-              <li key={k}>
-                <span>{k}</span>
-                <strong>{v}</strong>
+      <div className="mind-block">
+        <h3>心性</h3>
+        <ul>
+          {MIND_DIMENSIONS.map(({ key, blurb }) => {
+            const value = typeof mind[key] === "number" ? mind[key] : 0;
+            const pct = Math.max(0, Math.min(100, value));
+            return (
+              <li key={key}>
+                <div className="mind-row">
+                  <div className="mind-label">
+                    <span className="mind-name">{key}</span>
+                    <span className="mind-blurb">{blurb}</span>
+                  </div>
+                  <strong className="mind-value">{value}</strong>
+                </div>
+                <div
+                  className="mind-bar"
+                  role="meter"
+                  aria-label={`${key} ${value}`}
+                  aria-valuenow={pct}
+                  aria-valuemin={0}
+                  aria-valuemax={100}
+                >
+                  <span style={{ width: `${pct}%` }} />
+                </div>
               </li>
-            ))}
-          </ul>
-        </div>
-      ) : null}
+            );
+          })}
+        </ul>
+      </div>
       {life.summary ? (
         <div className="summary-block">
-          <h3>摘要</h3>
+          <h3>记忆卡</h3>
           <p>{life.summary}</p>
         </div>
       ) : null}
