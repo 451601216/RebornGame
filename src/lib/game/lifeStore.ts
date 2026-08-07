@@ -17,12 +17,25 @@ function lifePath(id: string): string {
 }
 
 function normalizeLifeRecord(life: LifeRecord): LifeRecord {
+  const status = life.meta?.status;
+  const normalizedStatus =
+    status === "cleared" || status === "dead" || status === "alive"
+      ? status
+      : "alive";
+
   return {
     ...life,
+    meta: {
+      ...life.meta,
+      status: normalizedStatus,
+    },
     state: {
       ...life.state,
       mind: normalizeMind(life.state?.mind),
     },
+    initialMind: life.initialMind
+      ? normalizeMind(life.initialMind)
+      : undefined,
   };
 }
 

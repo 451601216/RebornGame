@@ -124,13 +124,8 @@ export const turnLlmSchema = z.object({
   ageAdvance: numberish.optional(),
   ui: eventUiSchema,
   stateDelta: z.record(z.string(), z.unknown()).default({}),
-  death: z
-    .object({
-      died: z.boolean(),
-      cause: z.string().optional(),
-      epilogue: z.string().optional(),
-    })
-    .optional(),
+  /** 旧模型偶发字段：忽略，终局由 engine 判定 */
+  death: z.unknown().optional(),
   summaryUpdate: z.string().optional(),
 });
 

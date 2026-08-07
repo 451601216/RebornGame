@@ -1,3 +1,8 @@
+import {
+  getThemeProgress,
+  getThemeStage,
+  parseMemoryCardText,
+} from "./memoryCard";
 import type { LifeEvent, LifeRecord, LifeState, PlayerInput } from "./types";
 
 /** 事件数达到后开始更新记忆卡；之后每 N 次事件轻量更新一次 */
@@ -44,9 +49,11 @@ export function compactBeat(
     beat: truncate(ev.narrative, 80),
     uiType: ev.ui.type,
     playerInput: compactPlayerInput(playerInput ?? ev.playerInput),
-    death: ev.death
-      ? { died: ev.death.died, cause: ev.death.cause }
-      : null,
+    ending: ev.ending
+      ? { type: ev.ending.type, cause: ev.ending.cause }
+      : ev.death?.died
+        ? { type: "death" as const, cause: ev.death.cause }
+        : null,
   };
 }
 
@@ -83,9 +90,17 @@ export function buildTurnUserPrompt(
 ): string {
   const last = life.events[life.events.length - 1];
   const lastBeat = last ? compactBeat(last, playerInput) : null;
+  const card = parseMemoryCardText(life.summary);
+  const themeBlock = {
+    themeHook: life.profile.themeHook,
+    themeProgress: getThemeProgress(life.summary),
+    themeStage: getThemeStage(life.summary),
+    unfinished: card?.unfinished ?? [],
+  };
 
   return `当世上下文（仅此一世；长期记忆以记忆卡为准，勿编造卡外细节）：
 身份指纹: ${JSON.stringify(profileFingerprint(life))}
+炼心课题: ${JSON.stringify(themeBlock)}
 state: ${JSON.stringify(compactState(life.state))}
 记忆卡:
 ${life.summary?.trim() || "（暂无，请依据身份指纹与上一拍续写）"}
@@ -93,7 +108,7 @@ ${life.summary?.trim() || "（暂无，请依据身份指纹与上一拍续写�
 上一拍: ${JSON.stringify(lastBeat)}
 上一拍 ui.type: ${lastBeat?.uiType ?? "无"}（本轮尽量换一种交互类型）
 
-请根据上一拍与玩家输入生成下一事件 JSON。`;
+请根据上一拍与玩家输入生成下一事件 JSON。勿输出 death / enlightenment。`;
 }
 
 /**
@@ -104,6 +119,11 @@ export function buildSummaryUserPrompt(
   closedBeat: LifeEvent,
 ): string {
   return `身份指纹: ${JSON.stringify(profileFingerprint(life))}
+炼心课题: ${JSON.stringify({
+    themeHook: life.profile.themeHook,
+    themeProgress: getThemeProgress(life.summary),
+    themeStage: getThemeStage(life.summary),
+  })}
 当前 state: ${JSON.stringify(compactState(life.state))}
 旧记忆卡:
 ${life.summary?.trim() || "（无）"}
@@ -111,7 +131,7 @@ ${life.summary?.trim() || "（无）"}
 刚结束的一拍（据此合并更新记忆卡，勿扩写未提及事实）:
 ${JSON.stringify(compactBeat(closedBeat))}
 
-请输出更新后的记忆卡 JSON。`;
+请输出更新后的记忆卡 JSON（含 themeProgress / themeStage / milestones）。`;
 }
 
 export function shouldUpdateMemoryCard(eventCount: number): boolean {

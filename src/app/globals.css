@@ -77,10 +77,10 @@ input {
 
 .hero h1 {
   font-family: var(--font-display);
-  font-size: clamp(2.8rem, 8vw, 4.5rem);
+  font-size: clamp(2.1rem, 5.5vw, 3rem);
   font-weight: 600;
-  letter-spacing: 0.08em;
-  line-height: 1.2;
+  letter-spacing: 0.1em;
+  line-height: 1.25;
   margin-bottom: 1rem;
 }
 
@@ -141,7 +141,7 @@ input {
 
 .save-list h2 {
   font-family: var(--font-display);
-  font-size: 1.4rem;
+  font-size: 1.2rem;
   font-weight: 600;
   letter-spacing: 0.08em;
   margin-bottom: 1rem;
@@ -556,4 +556,367 @@ input {
   .hero {
     padding-top: 2rem;
   }
+}
+
+.link-btn {
+  display: inline-flex;
+  align-items: center;
+  text-decoration: none;
+}
+
+.narrative-cause {
+  margin-top: 0.75rem;
+  color: var(--accent);
+  font-size: 0.95rem;
+}
+
+.health-row {
+  display: grid;
+  gap: 0.25rem;
+}
+
+.theme-block {
+  display: grid;
+  gap: 0.2rem;
+}
+
+.theme-hook {
+  display: block;
+}
+
+.theme-stage {
+  font-size: 0.8rem;
+  color: var(--accent-soft);
+}
+
+.theme-progress-label {
+  font-size: 0.75rem;
+  color: var(--ink-soft);
+  font-variant-numeric: tabular-nums;
+}
+
+.theme-bar > span {
+  background: var(--accent-soft);
+}
+
+.relations-block ul,
+.inventory-block ul {
+  list-style: none;
+  display: grid;
+  gap: 0.35rem;
+  font-size: 0.88rem;
+}
+
+.relations-block li {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.soul-link {
+  margin-top: 1.25rem;
+  font-size: 0.9rem;
+}
+
+.soul-link a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.soul-link a:hover {
+  text-decoration: underline;
+}
+
+.milestones-line {
+  margin-top: 0.5rem;
+  font-size: 0.82rem !important;
+}
+
+.mind-delta-toast,
+.bond-toast {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 0.75rem;
+  margin-bottom: 0.75rem;
+  padding: 0.55rem 0.75rem;
+  background: rgba(255, 255, 255, 0.55);
+  border: 1px solid var(--line);
+  font-size: 0.9rem;
+  letter-spacing: 0.04em;
+}
+
+.mind-delta-toast .up,
+.mind-compare .up {
+  color: #2f6b3a;
+}
+
+.mind-delta-toast .down,
+.mind-compare .down {
+  color: var(--danger);
+}
+
+.event-timeline {
+  margin-top: 1.5rem;
+  border-top: 1px solid var(--line);
+  padding-top: 0.75rem;
+}
+
+.event-timeline summary {
+  cursor: pointer;
+  color: var(--accent-soft);
+  font-size: 0.9rem;
+  letter-spacing: 0.06em;
+}
+
+.event-timeline ol {
+  list-style: none;
+  margin-top: 0.75rem;
+  display: grid;
+  gap: 0.65rem;
+}
+
+.event-timeline li p {
+  font-size: 0.88rem;
+  color: var(--ink-soft);
+  line-height: 1.5;
+}
+
+.timeline-turn {
+  font-size: 0.75rem;
+  color: var(--accent-soft);
+  letter-spacing: 0.06em;
+}
+
+.life-summary {
+  padding: 1.5rem 0;
+  display: grid;
+  gap: 1.25rem;
+}
+
+.life-summary-clear {
+  padding: 2rem 1.25rem;
+  border: 1px solid rgba(107, 63, 42, 0.28);
+  background: rgba(255, 255, 255, 0.4);
+  box-shadow: var(--shadow);
+}
+
+.life-summary h2 {
+  font-family: var(--font-display);
+  font-size: clamp(1.5rem, 4vw, 2.1rem);
+  letter-spacing: 0.1em;
+}
+
+.life-summary-cause {
+  color: var(--accent);
+  letter-spacing: 0.08em;
+}
+
+.life-summary-epilogue {
+  color: var(--ink-soft);
+  line-height: 1.7;
+  white-space: pre-wrap;
+}
+
+.life-summary-meta {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.life-summary-meta > div {
+  display: grid;
+  grid-template-columns: 3.5rem 1fr;
+  gap: 0.5rem;
+  font-size: 0.95rem;
+}
+
+.life-summary-meta dt {
+  color: var(--accent-soft);
+}
+
+.life-summary-block h3 {
+  font-size: 1rem;
+  margin-bottom: 0.5rem;
+  letter-spacing: 0.08em;
+}
+
+.life-summary-block ul {
+  list-style: none;
+  display: grid;
+  gap: 0.35rem;
+  color: var(--ink-soft);
+  font-size: 0.92rem;
+}
+
+.mind-compare {
+  list-style: none;
+  display: grid;
+  gap: 0.35rem;
+}
+
+.mind-compare li {
+  display: grid;
+  grid-template-columns: 3rem 1fr auto;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.life-summary-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.soul-entry-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.25rem 1.4rem;
+  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.4);
+  box-shadow: var(--shadow);
+  text-decoration: none;
+  color: inherit;
+  transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.soul-entry-card:hover {
+  background: rgba(255, 255, 255, 0.65);
+  border-color: rgba(107, 63, 42, 0.35);
+}
+
+.soul-entry-card h2 {
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  letter-spacing: 0.08em;
+  margin: 0.25rem 0 0.5rem;
+}
+
+.soul-entry-preview {
+  color: var(--ink-soft);
+  font-size: 0.92rem;
+  line-height: 1.55;
+}
+
+.soul-entry-arrow {
+  color: var(--accent);
+  letter-spacing: 0.08em;
+  flex-shrink: 0;
+}
+
+.soul-shell {
+  display: grid;
+  gap: 2rem;
+}
+
+.soul-header h1 {
+  font-family: var(--font-display);
+  font-size: clamp(1.85rem, 4.5vw, 2.5rem);
+  letter-spacing: 0.12em;
+  margin: 0.5rem 0;
+}
+
+.soul-cleared-badge {
+  display: inline-block;
+  margin-top: 0.5rem;
+  padding: 0.25rem 0.65rem;
+  border: 1px solid rgba(107, 63, 42, 0.35);
+  color: var(--accent);
+  letter-spacing: 0.12em;
+  font-size: 0.85rem;
+}
+
+.soul-essence p {
+  font-size: 1.05rem;
+  line-height: 1.75;
+  color: var(--ink-soft);
+}
+
+.soul-stats ul {
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(8rem, 1fr));
+  gap: 0.75rem;
+}
+
+.soul-stats li {
+  padding: 0.75rem;
+  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.35);
+  font-size: 0.9rem;
+}
+
+.soul-stats strong {
+  margin: 0 0.25rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.soul-shell h2 {
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  letter-spacing: 0.1em;
+  margin-bottom: 0.85rem;
+}
+
+.bond-grid,
+.relic-grid {
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+  gap: 0.85rem;
+}
+
+.bond-card,
+.relic-card {
+  padding: 1rem;
+  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.4);
+  display: grid;
+  gap: 0.35rem;
+}
+
+.bond-card h3,
+.relic-card h3 {
+  font-family: var(--font-display);
+  letter-spacing: 0.08em;
+}
+
+.bond-epithet {
+  font-size: 0.85rem;
+  color: var(--accent-soft);
+}
+
+.bond-meta {
+  font-size: 0.8rem;
+  color: var(--accent-soft);
+}
+
+.bond-memory {
+  font-size: 0.9rem;
+  line-height: 1.55;
+  color: var(--ink-soft);
+}
+
+.thread-list {
+  list-style: none;
+  display: grid;
+  gap: 0.65rem;
+}
+
+.thread-list li {
+  display: grid;
+  gap: 0.15rem;
+  padding-bottom: 0.65rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.thread-hook {
+  font-size: 1rem;
+}
+
+.thread-meta {
+  font-size: 0.8rem;
+  color: var(--ink-soft);
 }

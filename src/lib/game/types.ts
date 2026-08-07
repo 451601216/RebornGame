@@ -1,4 +1,4 @@
-import type { MindState } from "./mind";
+import type { MindKey, MindState } from "./mind";
 
 export type UiType = "single" | "multi" | "fill" | "fill_choice" | "none";
 
@@ -55,6 +55,13 @@ export type LifeState = {
   relationships: Relationship[];
 };
 
+/** Engine 写入的当世结局（非 LLM 返回） */
+export type LifeEnding = {
+  type: "death" | "enlightenment";
+  cause: string;
+  epilogue?: string;
+};
+
 export type LifeEvent = {
   turn: number;
   age: number;
@@ -62,17 +69,19 @@ export type LifeEvent = {
   ui: EventUi;
   stateDelta?: Record<string, unknown>;
   playerInput?: PlayerInput | null;
+  /** @deprecated 旧档兼容；新逻辑用 ending */
   death?: {
     died: boolean;
     cause?: string;
     epilogue?: string;
   };
+  ending?: LifeEnding;
 };
 
 export type LifeMeta = {
   startedAt: string;
   endedAt: string | null;
-  status: "alive" | "dead";
+  status: "alive" | "dead" | "cleared";
 };
 
 export type LifeRecord = {
@@ -82,6 +91,8 @@ export type LifeRecord = {
   state: LifeState;
   events: LifeEvent[];
   summary: string;
+  /** 开局心性，供结算对比 */
+  initialMind?: MindState;
 };
 
 export type ProfileFingerprint = {
@@ -96,11 +107,55 @@ export type ProfileFingerprint = {
 
 export type LifeListItem = {
   id: string;
-  status: "alive" | "dead";
+  status: "alive" | "dead" | "cleared";
   name: string;
   era: string;
   age: number;
   startedAt: string;
   endedAt: string | null;
   themeHook: string;
+};
+
+export type BondCharacter = {
+  id: string;
+  name: string;
+  epithet?: string;
+  originLifeId: string;
+  originEra: string;
+  bondPeak: number;
+  memory: string;
+  relationship?: string;
+};
+
+export type BondRelic = {
+  id: string;
+  name: string;
+  originLifeId: string;
+  originEra: string;
+  memory: string;
+};
+
+export type ThemeThread = {
+  hook: string;
+  lifeId: string;
+  progress: number;
+  resolved: boolean;
+};
+
+export type SoulRecord = {
+  essence: string;
+  gameCleared: boolean;
+  clearedAt?: string;
+  clearedLifeId?: string;
+  stats: {
+    totalLives: number;
+    totalTurns: number;
+    deaths: number;
+    nearEnlightenment: number;
+  };
+  bonds: BondCharacter[];
+  relics: BondRelic[];
+  mindImprint: Partial<Record<MindKey, number>>;
+  themeThreads: ThemeThread[];
+  lastUpdated: string;
 };

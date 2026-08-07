@@ -60,16 +60,18 @@ function parseDeltaNumber(value: unknown): number | null {
 }
 
 /**
- * 从 stateDelta 抽出心性相对增减，避免 deepMerge 把 mind 当绝对值覆盖。
+ * 从 stateDelta 抽出心性 / 身 相对增减，避免 deepMerge 当绝对值覆盖。
  */
-function extractMindDelta(delta: Record<string, unknown> | undefined): {
+function extractRelativeDeltas(delta: Record<string, unknown> | undefined): {
   cleanDelta: Record<string, unknown>;
   mindDelta: Partial<Record<MindKey, number>>;
+  healthDelta: number | null;
 } {
   const cleanDelta: Record<string, unknown> = {};
   const mindDelta: Partial<Record<MindKey, number>> = {};
+  let healthDelta: number | null = null;
 
-  if (!delta) return { cleanDelta, mindDelta };
+  if (!delta) return { cleanDelta, mindDelta, healthDelta };
 
   for (const [key, value] of Object.entries(delta)) {
     if (key === "mind") {
@@ -93,10 +95,16 @@ function extractMindDelta(delta: Record<string, unknown> | undefined): {
       continue;
     }
 
+    if (key === "health") {
+      const n = parseDeltaNumber(value);
+      if (n !== null) healthDelta = n;
+      continue;
+    }
+
     cleanDelta[key] = value;
   }
 
-  return { cleanDelta, mindDelta };
+  return { cleanDelta, mindDelta, healthDelta };
 }
 
 function applyMindRelativeDelta(
@@ -119,7 +127,7 @@ export function applyStateDelta(
   delta: Record<string, unknown> | undefined,
   ageAdvance?: number,
 ): LifeState {
-  const { cleanDelta, mindDelta } = extractMindDelta(delta);
+  const { cleanDelta, mindDelta, healthDelta } = extractRelativeDeltas(delta);
   const base = structuredClone(state) as unknown as Record<string, unknown>;
   const merged = deepMerge(base, cleanDelta) as unknown as LifeState;
 
@@ -132,10 +140,16 @@ export function applyStateDelta(
   }
   merged.age = Math.max(0, Math.min(120, Math.round(merged.age)));
 
-  if (typeof merged.health !== "number" || Number.isNaN(merged.health)) {
+  if (healthDelta !== null) {
+    merged.health = Math.max(
+      0,
+      Math.min(100, Math.round(state.health + healthDelta)),
+    );
+  } else if (typeof merged.health !== "number" || Number.isNaN(merged.health)) {
     merged.health = state.health;
+  } else {
+    merged.health = Math.max(0, Math.min(100, Math.round(merged.health)));
   }
-  merged.health = Math.max(0, Math.min(100, Math.round(merged.health)));
 
   merged.mind = applyMindRelativeDelta(state.mind, mindDelta);
 
